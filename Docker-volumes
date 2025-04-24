@@ -1,0 +1,26 @@
+- Create a Docker volume named mysql-data
+docker volume create mysql-data
+
+ - Run MySQL container in the background and mount the volume
+docker run -d \
+  --name mysql-box \
+  -e MYSQL_ROOT_PASSWORD=rootpass \
+  -v mysql-data:/var/lib/mysql \
+  mysql
+
+- Kill (stop and remove) the MySQL container
+docker container stop mysql-box
+docker container rm mysql-box
+
+- Verify that the data still exists
+docker volume inspect mysql-data
+
+- Run a new MySQL container and mount the same volume
+docker run -d \
+  --name mysql-new \
+  -e MYSQL_ROOT_PASSWORD=rootpass \
+  -v mysql-data:/var/lib/mysql \
+  mysql
+
+- Test that data is the same and not corrupted
+docker exec -it mysql-new mysql -uroot -prootpass -e "SHOW DATABASES;"
