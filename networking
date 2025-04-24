@@ -1,0 +1,33 @@
+- Clean all containers and image from your host
+docker container stop $(docker container ls -aq)
+docker container rm $(docker container ls -aq)
+docker image rm -f $(docker image ls -aq)
+
+- Create docker network named vaio-net
+docker network create vaio-net
+
+- Run alpine container on custom docker network named vaio-net
+docker run -dit --name alpine-box --network vaio-net alpine
+
+- Run nginx container on custom docker network named vaio-net
+docker run -dit --name nginx-box --network vaio-net nginx
+
+- Run ubuntu/apache2 container on default docker network
+docker run -dit --name apache-box ubuntu bash
+# Then install apache2 inside the container if needed:
+docker exec apache-box apt update
+docker exec apache-box apt install -y apache2 iputils-ping
+
+- Run from alpine container ping command to test connectivity with ubuntu/apache2
+docker exec alpine-box ping apache-box
+
+- BONUS: connect already running ubuntu/apache2 container to vaio-net
+docker network connect vaio-net apache-box
+docker exec alpine-box ping apache-box
+
+- Delete all the containers images and network
+docker container stop $(docker container ls -aq)
+docker container rm $(docker container ls -aq)
+docker image rm -f $(docker image ls -aq)
+docker network rm vaio-net
+
